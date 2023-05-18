@@ -9,9 +9,6 @@ const port = process.env.PORT || 5000 ;
 app.use(cors());
 app.use(express.json());
 
-// toyboy
-// F5GFAq0fpB6nEGL4
-console.log(process.env.DB_USER);
 
 
 
@@ -31,11 +28,18 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
 
+    const allToysCollection = client.db('alltoysDB').collection('toys') ;
 
+    app.get('/alltoys',  async (req, res)=>{
+        const result = await allToysCollection.find({}).toArray();
+        res.send(result)
+    })
 
-
-
-
+    app.post('/addtoys', async (req, res)=>{
+      const body = req.body;
+      const result = await allToysCollection.insertOne(body);
+      res.send(result);
+    })
 
 
     // Send a ping to confirm a successful connection
