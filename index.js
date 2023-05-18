@@ -30,7 +30,14 @@ async function run() {
 
     const allToysCollection = client.db('alltoysDB').collection('toys') ;
 
-    app.get('/alltoys',  async (req, res)=>{
+    app.get('/alltoys/:text',  async (req, res)=>{
+      console.log(req.params.text);
+      if(req.params.text == "Marvel" || req.params.text == "Avengers" || req.params.text == "Star Wars"){
+        const result = await allToysCollection.
+        find({ sub_category: req.params.text}).toArray()
+        return res.send(result)
+      }
+
         const result = await allToysCollection.find({}).toArray();
         res.send(result)
     })
