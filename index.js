@@ -31,13 +31,26 @@ async function run() {
     const allToysCollection = client.db('alltoysDB').collection('toys');
 
 
+    const indexKeys = { name : 1};
+    const indexOptions = {name : "price"};
+    const result = await allToysCollection.createIndex(indexKeys, indexOptions)
+  
+
+
+    app.get('/toySearchByName/:text', async (req, res) =>{
+      const searchToy = req.params.text ;
+      const result = await allToysCollection.find({name:{$regex: searchToy, $options: "i"}}).toArray();
+      res.send(result);
+    })
+
+
     app.get('/alltoys', async (req, res) => {
       console.log(req.query.email);
       let query = {};
       if(req.query?.email){
         query = {seller_email: req.query.email}
       }
-      const result = await allToysCollection.find(query).toArray();
+      const result = await allToysCollection.find(query).sort({price: 1}).limit(20).toArray();
       res.send(result)
     })
 
