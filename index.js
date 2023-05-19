@@ -2,7 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 require('dotenv').config();
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 
@@ -41,11 +41,6 @@ async function run() {
       res.send(result)
     })
 
-    // app.get('/alltoys', async (req, res) => {
-    //   console.log(req.query);
-    //   // const result = await allToysCollection.find(query).toArray();
-    //   // res.send(result)
-    // })
 
     app.get('/alltoys/:text', async (req, res) => {
       console.log(req.params.text);
@@ -55,16 +50,21 @@ async function run() {
         return res.send(result)
       }
 
-      // const result = await allToysCollection.find({}).toArray();
-      // res.send(result)
     })
 
     app.post('/addtoys', async (req, res) => {
       const body = req.body;
       const result = await allToysCollection.insertOne(body);
       res.send(result);
+      console.log(result);
     })
 
+    app.delete('/alltoys/:id', async (req, res) =>{
+      const id = req.params.id ;
+      const query = {_id: new ObjectId(id)} ;
+      const result = await allToysCollection.deleteOne(query) ;
+      res.send(result)
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
