@@ -6,6 +6,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const port = process.env.PORT || 5000;
 
 
+
 app.use(cors());
 app.use(express.json());
 
@@ -20,20 +21,28 @@ const client = new MongoClient(uri, {
     version: ServerApiVersion.v1,
     strict: true,
     deprecationErrors: true,
-  }
+  },
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  maxPoolSize: 10,
 });
 
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    client.connect((error) => {
+      if (error) {
+        console.error(error);
+        return;
+      }
+    });
 
     const allToysCollection = client.db('alltoysDB').collection('toys');
 
 
     const indexKeys = { name : 1};
     const indexOptions = {name : "price"};
-    const result = await allToysCollection.createIndex(indexKeys, indexOptions)
+    allToysCollection.createIndex(indexKeys, indexOptions)
   
 
 
@@ -64,14 +73,12 @@ async function run() {
     })
 
 
-    app.get('/alltoys/:text', async (req, res) => {
-      console.log(req.params.text);
-      if (req.params.text == "Marvel" || req.params.text == "Avengers" || req.params.text == "Star Wars") {
-        const result = await allToysCollection.
-          find({ sub_category: req.params.text }).toArray()
-        return res.send(result)
-      }
+    app.get('/category', async (req, res) => {
 
+      const catText = req.query.cat ;
+      const query = {sub_category: catText}
+      const result = await allToysCollection.find(query).limit(3).toArray();
+      res.send(result)
     })
 
 
