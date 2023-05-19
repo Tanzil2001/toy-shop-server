@@ -42,6 +42,15 @@ async function run() {
     })
 
 
+    app.get('/alltoys/:id', async (req,res) =>{
+      const id = req.params.id
+      console.log(req.params.id);
+      const query = {_id: new ObjectId(id)}
+      const result = await allToysCollection.findOne(query)
+      res.send(result)
+    })
+
+
     app.get('/alltoys/:text', async (req, res) => {
       console.log(req.params.text);
       if (req.params.text == "Marvel" || req.params.text == "Avengers" || req.params.text == "Star Wars") {
@@ -52,12 +61,17 @@ async function run() {
 
     })
 
+
     app.post('/addtoys', async (req, res) => {
       const body = req.body;
       const result = await allToysCollection.insertOne(body);
       res.send(result);
-      console.log(result);
     })
+
+    // app.put('/addtoys/:id', async (req, res)=>{
+    //     const updatedToy = req.body ;
+    //     console.log(updatedToy);
+    // })
 
     app.delete('/alltoys/:id', async (req, res) =>{
       const id = req.params.id ;
