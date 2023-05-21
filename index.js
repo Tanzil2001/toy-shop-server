@@ -59,7 +59,10 @@ async function run() {
       if(req.query?.email){
         query = {seller_email: req.query.email}
       }
-      const result = await allToysCollection.find(query).sort({price: 1}).limit(20).toArray();
+      const option ={
+        sort: {"price" : -1}
+      }
+      const result = await allToysCollection.find(query, option).limit(20).toArray();
       res.send(result)
     })
 
@@ -85,7 +88,7 @@ async function run() {
     app.post('/addtoys', async (req, res) => {
       const body = req.body;
       const result = await allToysCollection.insertOne(body);
-      res.send(result);
+      res.send(result);  
     })
 
     app.put('/alltoys/:id', async (req, res)=>{
